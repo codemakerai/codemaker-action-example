@@ -1,2 +1,3 @@
 # codemaker-action-example
-CodeMaker Github Action Example
+
+[CodeMaker Github Action](https://github.com/codemakerai/codemaker-action) Example
