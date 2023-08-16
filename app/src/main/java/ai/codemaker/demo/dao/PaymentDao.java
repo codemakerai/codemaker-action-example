@@ -8,16 +8,31 @@ import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * PaymentDao class.
+ */
 public class PaymentDao implements CrudDao<Payment> {
 
     private final Session session;
 
     private static final Logger logger = LoggerFactory.getLogger(PaymentDao.class);
 
+    /**
+     * Constructor for PaymentDao class.
+     *
+     * @param session The session to be used for the PaymentDao.
+     */
     public PaymentDao(Session session) {
         this.session = session;
     }
 
+    /**
+     * Saves the given {@link Payment} to the database.
+     *
+     * @param payment The {@link Payment} to be saved. Must not be null.
+     * @throws IllegalArgumentException if payment is null.
+     * @throws HibernateException if an error occurs while saving the payment.
+     */
     public void save(Payment payment) {
         if (payment == null) {
             throw new IllegalArgumentException("Payment must not be null");
@@ -30,6 +45,11 @@ public class PaymentDao implements CrudDao<Payment> {
         }
     }
 
+    /**
+     * Updates a Payment object in the database.
+     *
+     * @param payment The Payment object to be updated.
+     */
     public void update(Payment payment) {
         try {
             session.beginTransaction();
@@ -41,6 +61,12 @@ public class PaymentDao implements CrudDao<Payment> {
         }
     }
 
+    /**
+     * Retrieves a Payment object from the database based on the provided id.
+     *
+     * @param id The id of the Payment object to be retrieved.
+     * @return The Payment object associated with the provided id, or null if no such Payment exists.
+     */
     public Payment get(String id) {
         Payment payment = null;
         try {
@@ -54,6 +80,11 @@ public class PaymentDao implements CrudDao<Payment> {
         return payment;
     }
 
+    /**
+     * Deletes a Payment from the database.
+     *
+     * @param payment The Payment to be deleted.
+     */
     public void delete(Payment payment) {
         try {
             session.beginTransaction();
