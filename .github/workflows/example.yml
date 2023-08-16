@@ -12,7 +12,7 @@ jobs:
         with:
           api-key: ${{ secrets.CODEMAKER_API_KEY }}
           mode: code # code, docs or unit-tests
-          path: ./example.java
+          path: app/src/main/java/ai/codemaker/demo/dao/PaymentDao.java
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5.0.2
         with:
