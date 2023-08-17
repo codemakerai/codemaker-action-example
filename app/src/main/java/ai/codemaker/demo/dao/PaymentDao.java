@@ -26,7 +26,15 @@ public class PaymentDao implements CrudDao<Payment> {
      * @throws HibernateException if an error occurs while saving the payment.
      */
     public void save(Payment payment) {
-
+        if (payment == null) {
+            throw new IllegalArgumentException("Payment must not be null");
+        }
+        try {
+            session.save(payment);
+        } catch (HibernateException e) {
+            logger.error("Error while saving payment", e);
+            throw e;
+        }
     }
 
     /**
@@ -35,7 +43,14 @@ public class PaymentDao implements CrudDao<Payment> {
      * @param payment The {@link Payment} object to be updated.
      */
     public void update(Payment payment) {
-
+        try {
+            session.beginTransaction();
+            session.update(payment);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error while updating payment: " + e.getMessage());
+            session.getTransaction().rollback();
+        }
     }
 
     /**
@@ -44,7 +59,16 @@ public class PaymentDao implements CrudDao<Payment> {
      * @return payment the payment or null
      */
     public Payment get(String id) {
-        return null;
+        Payment payment = null;
+        try {
+            Session session = this.session;
+            Query query = session.createQuery("from Payment where id = :id");
+            query.setParameter("id", id);
+            payment = (Payment) query.uniqueResult();
+        } catch (Exception e) {
+            logger.error("Error retrieving payment with id: " + id, e);
+        }
+        return payment;
     }
 
     /**
@@ -53,6 +77,13 @@ public class PaymentDao implements CrudDao<Payment> {
      * @param payment payment to save
      */
     public void delete(Payment payment) {
-
+        try {
+            session.beginTransaction();
+            session.delete(payment);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error deleting payment: " + e.getMessage());
+            session.getTransaction().rollback();
+        }
     }
 }
