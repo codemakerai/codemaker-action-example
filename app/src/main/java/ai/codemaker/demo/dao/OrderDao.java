@@ -24,7 +24,15 @@ public class OrderDao implements CrudDao<Order> {
      * @throws HibernateException if an error occurs while saving the Order.
      */
     public void save(Order Order) {
-
+        if (Order == null) {
+            throw new IllegalArgumentException("Order must not be null");
+        }
+        try {
+            session.save(Order);
+        } catch (HibernateException e) {
+            logger.error("Error while saving Order", e);
+            throw e;
+        }
     }
 
     /**
@@ -33,7 +41,17 @@ public class OrderDao implements CrudDao<Order> {
      * @param Order The {@link Order} object to be updated.
      */
     public void update(Order Order) {
-
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+            session.update(Order);
+            transaction.commit();
+        } catch (HibernateException e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            logger.error("Error while updating Order: " + e.getMessage());
+        }
     }
 
     /**
@@ -42,7 +60,15 @@ public class OrderDao implements CrudDao<Order> {
      * @return Order the Order or null
      */
     public Order get(String id) {
-        return null;
+        try {
+            Transaction transaction = session.beginTransaction();
+            Order order = session.get(Order.class, id);
+            transaction.commit();
+            return order;
+        } catch (Exception e) {
+            logger.error("Error retrieving order with id: " + id, e);
+            return null;
+        }
     }
 
     /**
@@ -51,6 +77,13 @@ public class OrderDao implements CrudDao<Order> {
      * @param Order Order to save
      */
     public void delete(Order Order) {
-
+        try {
+            session.beginTransaction();
+            session.delete(order);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("Error deleting order: " + e.getMessage());
+            session.getTransaction().rollback();
+        }
     }
 }
